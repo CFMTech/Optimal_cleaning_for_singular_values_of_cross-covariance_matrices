@@ -155,7 +155,7 @@ ax.plot(
     s_cleaned_over_s_isotonic[::-1],
     "b",
     linewidth=3,
-    label="$s_k^{\mathrm{clean}}/s_k$",
+    label="$s_k^{\mathrm{cleaned}}/s_k$",
 )
 plt.axhline(y=1, color="k", linestyle="--", label="$y=1$")
 plt.tick_params(axis="both", which="major", labelsize=15)

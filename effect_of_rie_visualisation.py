@@ -59,7 +59,7 @@ def histo(E, ax, color="b", reg_coeff=1, label="", linewidth=1):
         )
 
 sv_labels={'empirical': '$s_k$ (empirical sing. val.)',
-           'cleaned': '$s_k^{\mathrm{clean}}$ (cleaned sing. val.)',
+           'cleaned': '$s_k^{\mathrm{cleaned}}$ (cleaned sing. val.)',
            'true': '$s_k^{\mathrm{true}}$ (true sing. val.)'}
 
 def plot_results(my_model, True_s, Emp_Sing_Val, Clean_Sing_Val, RIE_flag, file_name,
