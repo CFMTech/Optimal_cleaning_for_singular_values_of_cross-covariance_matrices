@@ -11,9 +11,13 @@ print(f"T={T} and sample size={N_LGN}: for larger matrices and samples, parallel
 proportion_infos = [0., .1, .2, .3, .4]
 alphas_ht = ['5', '2.5', '1.5', '0.5']
 
-tested_cases = ([f'lin_model__{prop}' for prop in proportion_infos] +
-                ['wishart__2'] +
-                [f'heavy_tailed__{al}' for al in alphas_ht])
+tested_cases = (
+        [f'lin_model__{prop}' for prop in proportion_infos] +
+        ['wishart__2'] +
+        [f'heavy_tailed__{al}' for al in alphas_ht] +
+        ['mixed_wishart__2'] +
+        [f'mixed_heavy_tailed__{al}' for al in alphas_ht]
+)
 
 
 def error_norm(x, x_0, norm='frobenius'):
@@ -24,15 +28,31 @@ def error_norm(x, x_0, norm='frobenius'):
 def estimator_comparison(T=500, model_param='lin_model__0.1', alpha=.4, beta=.7, sigmatwo=.5, a=.2, b=.5):
     n, p = my_int(alpha * T), my_int(beta * T)
     model, param = tuple(model_param.split('__'))
-    assert model in ('lin_model', 'wishart', 'heavy_tailed'), model
+    assert model in ('lin_model', 'wishart', 'heavy_tailed', 'mixed_wishart', 'mixed_heavy_tailed'), model
     if model == 'lin_model':
         pp = my_int(float(param) * n)
         C = np.matrix(Rectangular_Real_SRT(n, p, s=list(np.linspace(a, b, pp)) + [0] * (n - pp)))
         TrueTotalCovariance = np.matrix(np.bmat([[np.eye(n), C], [C.T, (C.T) * C + sigmatwo * np.eye(p)]]))
     elif model == 'wishart':
         TrueTotalCovariance = Wishart(n=n + p, p=int(param) * (n + p), real=True)
-    else:
+    elif model == 'heavy_tailed':
         TrueTotalCovariance = Heavy_Tailed_Empirical_Covariance_Matrix(n=n + p, p=2 * (n + p), alpha=float(param))
+    elif model == 'mixed_wishart':
+        CXY = get_submatrices_of_full_cov_mat(n=n,
+                                              p=p,
+                                              CZZ=Wishart(n=n + p, p=int(param) * (n + p), real=True))[2]
+        CXY_norm = np.linalg.norm(CXY, ord=2)
+        TrueTotalCovariance = np.matrix(np.bmat([[(CXY_norm) * np.eye(n), CXY],
+                                                 [CXY.T, (CXY_norm) * np.eye(p)]]))
+    else:
+        CXY = get_submatrices_of_full_cov_mat(n=n,
+                                              p=p,
+                                              CZZ=Heavy_Tailed_Empirical_Covariance_Matrix(n=n + p,
+                                                                                           p=2 * (n + p),
+                                                                                           alpha=float(param)))[2]
+        CXY_norm = np.linalg.norm(CXY, ord=2)
+        TrueTotalCovariance = np.matrix(np.bmat([[(CXY_norm) * np.eye(n), CXY],
+                                                 [CXY.T, (CXY_norm) * np.eye(p)]]))
     C = TrueTotalCovariance[np.ix_(range(n), range(n, n + p))]
     Etotale = Empirical_Covariance(T, TrueTotalCovariance)
     paper_RIE = RIE_Cross_Covariance(Etotale, T, n, p)
