@@ -148,7 +148,7 @@ print(f"fitted exponent for the error in Formula 1: {fit_for1.idxmin()}")
 
 fit_for2=pd.Series({expo: np.std(errors_f2*(list_T**expo))/np.mean(errors_f2*(list_T**expo))
                     for expo in possible_exponents})
-print(f"fitted exponent for the error in Formula 1: {fit_for2.idxmin()}")
+print(f"fitted exponent for the error in Formula 2: {fit_for2.idxmin()}")
 
 plt.figure()
 Ploting(Mean_diff_rel_Formule1, Std_diff_rel_Formule1, N_LGN, "r", "Formula 1", std_plot=plot_std)
