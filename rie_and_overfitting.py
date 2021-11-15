@@ -20,16 +20,8 @@ eps = 0.01
 invariance_flag = 1
 figsize = (5, 4)
 
-
- 
-
-
 n, p = my_int(alpha * Tis), my_int(beta * Tis)
 
- 
-
-
- 
 
 def my_local_model(proportion_info, invariance_flag=1):
     size_info = my_int(proportion_info * n)
@@ -61,9 +53,6 @@ Zis = np.matrix(np.bmat([[Ris], [Fis]]))
 Etoteis = Zis * (Zis.T) / Tis
 CRFos = np.matrix(Ros) * np.matrix(Fos.T) / Tos
 
-
-
-
 s, U, V, new_s, new_s_isotonic = RIE_Cross_Covariance(CZZemp=Etoteis,
                                                       T=Tis, n=n, p=p,
                                                       return_all=1)
@@ -83,7 +72,7 @@ for k in range(n):
     s_cleaned_over_s.append(new_s[k] / (s[k]))
     s_cleaned_over_s_isotonic.append(new_s_isotonic[k] / (s[k]))
 
-dimension_details=f"Tis={Tis}_Toos={Tos}_n={n}_p={p}"
+dimension_details = f"Tis={Tis}_Toos={Tos}_n={n}_p={p}"
 outdir = "data_and_figures/"
 outdir += sys.argv[0].split("/")[-1].replace(".py", "")
 outdir += f"/figures_{dimension_details}/"
@@ -101,7 +90,7 @@ plt.ylim(bottom=0)
 plt.xlabel("True singular value")
 title = "True vs emp and cleaned singular values"
 plt.title(title)
-file_name=os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
+file_name = os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
 plt.savefig(file_name, bbox_inches="tight")
 
 fig, ax = plt.subplots(figsize=figsize, tight_layout=True)
@@ -113,7 +102,7 @@ plt.legend(loc="best")
 title = "Singular values"
 plt.title(title)
 plt.xlabel("Singular value index (increasingly ordered)")
-file_name=os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
+file_name = os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
 plt.savefig(file_name, bbox_inches="tight")
 
 fig, ax = plt.subplots(figsize=figsize, tight_layout=True)
@@ -126,7 +115,7 @@ plt.legend(loc="best")
 title = "Cleaning quotients"
 plt.title(title)
 plt.xlabel("Singular value index (increasingly ordered)")
-file_name=os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
+file_name = os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
 plt.savefig(file_name, bbox_inches="tight")
 
 fig, ax = plt.subplots(figsize=figsize, tight_layout=True)
@@ -139,7 +128,7 @@ plt.legend(loc="best")
 title = "Overlaps quotients"
 plt.title(title)
 plt.xlabel("Singular value index (increasingly ordered)")
-file_name=os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
+file_name = os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
 plt.savefig(file_name, bbox_inches="tight")
 
 fig, ax = plt.subplots(figsize=figsize, tight_layout=True)
@@ -147,14 +136,14 @@ ax.plot(
     range(n),
     os_overlap_over_is_overlap[::-1],
     "r",
-    linewidth=3,
+    linewidth=1,
     label="$\mathrm{OVL}_{oos}/\mathrm{OVL}_{is}$",
 )
 ax.plot(
     range(n),
     s_cleaned_over_s_isotonic[::-1],
     "b",
-    linewidth=3,
+    linewidth=1,
     label="$s_k^{\mathrm{cleaned}}/s_k$",
 )
 plt.axhline(y=1, color="k", linestyle="--", label="$y=1$")
@@ -164,7 +153,7 @@ plt.legend(loc="best")
 title = "Overfitting factor and cleaning"
 # plt.title(title, fontsize=20)
 plt.xlabel("Singular value index $k$ (increasingly ordered)")
-file_name=os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
+file_name = os.path.join(outdir, (f"{title}_{dimension_details}.png").replace(" ", "_"))
 plt.savefig(file_name, bbox_inches="tight")
 
 # plt.figure()

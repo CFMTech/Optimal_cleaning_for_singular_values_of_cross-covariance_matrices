@@ -6,6 +6,7 @@ Created on Thu Aug 16 17:32:18 2018
 import os
 import sys
 import numpy as np
+import pandas as pd
 from time import time
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
@@ -18,12 +19,12 @@ plt.rcParams['axes.labelsize'] = 15
 
 def f0(x):
     return (
-        x
-        * (3 - x) ** 2
-        * ((x - 1.7) ** 2 + 0.1)
-        * (((x - 2.6) ** 2 + 1) ** (-1) + 1)
-        * (((x - 0.9) ** 2 + 1) ** (-1) + 1)
-        * (3.1 - x) ** (-2)
+            x
+            * (3 - x) ** 2
+            * ((x - 1.7) ** 2 + 0.1)
+            * (((x - 2.6) ** 2 + 1) ** (-1) + 1)
+            * (((x - 0.9) ** 2 + 1) ** (-1) + 1)
+            * (3.1 - x) ** (-2)
     )
 
 
@@ -89,6 +90,17 @@ def Wishart(n=100, p=100, real=True):
     else:
         Y = 2 ** (-0.5) * np.matrix(np.random.randn(n, p) + 1j * np.random.randn(n, p))
         return Y * (Y.H) / p
+
+
+def Heavy_Tailed_Empirical_Covariance_Matrix(n=100, p=100, alpha=2.5):
+    """Empirical covariance matrix of p vectors with size n whose entries
+    are iid distributed as \pm U^{-1/alpha}, with U uniform on [0,1]
+    and \pm a random sign"""
+    X = np.matrix(
+        ((np.random.rand(n, p)) ** (-1 / float(alpha)))
+        * (2 * np.random.binomial(1, 0.5, size=(n, p)) - 1)
+    )
+    return X * (X.T) / p
 
 
 def Empirical_Covariance(T=100, C=np.eye(100)):
@@ -166,8 +178,6 @@ def my_model(T, model=1):
             Ech.append(the_fancy_ran_var())
         C = Rectangular_Real_SRT(n, p, s=np.array(Ech))
         return (n, p, np.matrix(np.bmat([[np.eye(n), C], [C.T, np.eye(p)]])))
-
-
 
 
 def check_matrix(M, n, p):
@@ -335,7 +345,7 @@ def RIE_Cross_Covariance(
 
 
 def RIE_Covariance(
-    Cemp, T, Return_Ancient_Spectrum=False, Return_New_Spectrum=False, adjust_trace=True
+        Cemp, T, Return_Ancient_Spectrum=False, Return_New_Spectrum=False, adjust_trace=True
 ):
     """Almost Bouchaud's RIE for the true covariance matrix out of the empirical covariance matrix Cemp made out of a sample of T copies of the signal"""
     lam, U = np.linalg.eigh(Cemp)
@@ -349,12 +359,12 @@ def RIE_Covariance(
         new_lam.append(
             oldla
             * (
-                np.abs(
-                    1
-                    - q
-                    + q * oldla * np.mean(1 / (oldla + eta * 1j - np.delete(lam, k)))
-                )
-                ** (-2)
+                    np.abs(
+                        1
+                        - q
+                        + q * oldla * np.mean(1 / (oldla + eta * 1j - np.delete(lam, k)))
+                    )
+                    ** (-2)
             )
         )
     if adjust_trace:

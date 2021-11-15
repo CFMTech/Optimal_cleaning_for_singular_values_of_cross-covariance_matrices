@@ -8,13 +8,9 @@ from base_functions import *
 
 figsize = (5, 4)
 
-
-
-
 C_eta = 1.
 
 file_name = 'L_approx_verif_bi_modal_density_C_eta=' + str(C_eta).replace(".", "point") + '.png'
-
 
 len_list_T = 17
 # len_list_T=2
@@ -34,7 +30,6 @@ if mmodel == 3:
 else:
     def diff_rel(x, x_0):
         return np.abs(x - x_0) / np.abs(x_0)
-
 
 
 def Ploting(L_Mean, L_Std, N_LGN, my_color, my_name, std_plot=1):
@@ -79,14 +74,13 @@ for T in list_T:
 
 from time import time
 
-
 print("Computation of approx of L")
 Mean_diff_rel_Formule1 = []
 Std_diff_rel_Formule1 = []
-errors_f1=[]
+errors_f1 = []
 Mean_diff_rel_Formule2 = []
 Std_diff_rel_Formule2 = []
-errors_f2=[]
+errors_f2 = []
 for T in list_T:
     (n, p) = synthetic_data_np[T]
 
@@ -115,7 +109,7 @@ for T in list_T:
                                        algo_used=1,
                                        return_L=True)
         diffs_rels_formule1.append(diff_rel(approx_L, L_values[T][i]))
-        diffs_formule1.append(np.abs(approx_L-L_values[T][i]))
+        diffs_formule1.append(np.abs(approx_L - L_values[T][i]))
         approx_L = approx_L_or_imLoimH(z=z,
                                        n=n,
                                        p=p,
@@ -137,17 +131,17 @@ outdir = "data_and_figures/"
 outdir += sys.argv[0].split("/")[-1].replace(".py", "")
 os.makedirs(outdir, exist_ok=True)
 
-Mean_diff_rel_Formule1=np.array(Mean_diff_rel_Formule1)
-Mean_diff_rel_Formule2=np.array(Mean_diff_rel_Formule2)
+Mean_diff_rel_Formule1 = np.array(Mean_diff_rel_Formule1)
+Mean_diff_rel_Formule2 = np.array(Mean_diff_rel_Formule2)
 
-possible_exponents=np.arange(start=0, stop=5.5, step=.001)[1:]
+possible_exponents = np.arange(start=0, stop=5.5, step=.001)[1:]
 
-fit_for1=pd.Series({expo: np.std(errors_f1*(list_T**expo))/np.mean(errors_f1*(list_T**expo))
-                    for expo in possible_exponents})
+fit_for1 = pd.Series({expo: np.std(errors_f1 * (list_T ** expo)) / np.mean(errors_f1 * (list_T ** expo))
+                      for expo in possible_exponents})
 print(f"fitted exponent for the error in Formula 1: {fit_for1.idxmin()}")
 
-fit_for2=pd.Series({expo: np.std(errors_f2*(list_T**expo))/np.mean(errors_f2*(list_T**expo))
-                    for expo in possible_exponents})
+fit_for2 = pd.Series({expo: np.std(errors_f2 * (list_T ** expo)) / np.mean(errors_f2 * (list_T ** expo))
+                      for expo in possible_exponents})
 print(f"fitted exponent for the error in Formula 2: {fit_for2.idxmin()}")
 
 plt.figure()
@@ -180,7 +174,6 @@ for T in list_T:
     time_needed_for_formula1.append(t - time())
 print('\nDone for Algo 1')
 
-
 print('\nAlgo 2')
 time_needed_for_formula2 = []
 for T in list_T:
@@ -200,7 +193,7 @@ print('\nDone for Algo 2')
 
 plt.figure()
 time_ratios = [float(time_needed_for_formula1[i]) / float(time_needed_for_formula2[i]) for i in range(len(list_T))]
-plt.stem(list_T, time_ratios,  linewidth=3)
+plt.stem(list_T, time_ratios, linewidth=3)
 plt.ylim(ymin=0)
 plt.xlabel("$T$", fontsize=15)
 plt.ylabel("Elapsed time ratio: Algo 1 / Algo 2", fontsize=15)
@@ -209,10 +202,10 @@ plt.grid(True)
 if plot_legend:
     plt.legend(loc="best")
 if save_f:
-    file_name='time_f1_over_f2.png'
+    file_name = 'time_f1_over_f2.png'
     plt.savefig(os.path.join(outdir, file_name), bbox_inches='tight')
 
-plt.figure(figsize=(6,4))
+plt.figure(figsize=(6, 4))
 time_ratios = [float(time_needed_for_formula2[i]) / float(time_needed_for_formula1[i]) for i in range(len(list_T))]
 plt.stem(list_T, time_ratios, linewidth=3)
 plt.ylim(ymin=0)
@@ -223,5 +216,5 @@ plt.grid(True)
 if plot_legend:
     plt.legend(loc="best")
 if save_f:
-    file_name ='time_f2_over_f1.png'
+    file_name = 'time_f2_over_f1.png'
     plt.savefig(os.path.join(outdir, file_name), bbox_inches='tight')
