@@ -83,8 +83,10 @@ from time import time
 print("Computation of approx of L")
 Mean_diff_rel_Formule1 = []
 Std_diff_rel_Formule1 = []
+errors_f1=[]
 Mean_diff_rel_Formule2 = []
 Std_diff_rel_Formule2 = []
+errors_f2=[]
 for T in list_T:
     (n, p) = synthetic_data_np[T]
 
@@ -94,6 +96,8 @@ for T in list_T:
 
     diffs_rels_formule1 = []
     diffs_rels_formule2 = []
+    diffs_formule1 = []
+    diffs_formule2 = []
     for i in range(N_LGN):
         Etotale = synthetic_data_random[T][i]
         CXXemp, CYYemp, CXYemp = get_submatrices_of_full_cov_mat(n=n, p=p, CZZ=Etotale)
@@ -111,6 +115,7 @@ for T in list_T:
                                        algo_used=1,
                                        return_L=True)
         diffs_rels_formule1.append(diff_rel(approx_L, L_values[T][i]))
+        diffs_formule1.append(np.abs(approx_L-L_values[T][i]))
         approx_L = approx_L_or_imLoimH(z=z,
                                        n=n,
                                        p=p,
@@ -119,16 +124,31 @@ for T in list_T:
                                        algo_used=2,
                                        return_L=True)
         diffs_rels_formule2.append(diff_rel(approx_L, L_values[T][i]))
+        diffs_formule2.append(np.abs(approx_L - L_values[T][i]))
     Mean_diff_rel_Formule1.append(np.mean(diffs_rels_formule1))
     Std_diff_rel_Formule1.append(np.std(diffs_rels_formule1))
     Mean_diff_rel_Formule2.append(np.mean(diffs_rels_formule2))
     Std_diff_rel_Formule2.append(np.std(diffs_rels_formule2))
+    errors_f1.append(np.mean(diffs_formule1))
+    errors_f2.append(np.mean(diffs_formule2))
 print("Approx of L computed")
 
 outdir = "data_and_figures/"
 outdir += sys.argv[0].split("/")[-1].replace(".py", "")
 os.makedirs(outdir, exist_ok=True)
 
+Mean_diff_rel_Formule1=np.array(Mean_diff_rel_Formule1)
+Mean_diff_rel_Formule2=np.array(Mean_diff_rel_Formule2)
+
+possible_exponents=np.arange(start=0, stop=5.5, step=.001)[1:]
+
+fit_for1=pd.Series({expo: np.std(errors_f1*(list_T**expo))/np.mean(errors_f1*(list_T**expo))
+                    for expo in possible_exponents})
+print(f"fitted exponent for the error in Formula 1: {fit_for1.idxmin()}")
+
+fit_for2=pd.Series({expo: np.std(errors_f2*(list_T**expo))/np.mean(errors_f2*(list_T**expo))
+                    for expo in possible_exponents})
+print(f"fitted exponent for the error in Formula 1: {fit_for2.idxmin()}")
 
 plt.figure()
 Ploting(Mean_diff_rel_Formule1, Std_diff_rel_Formule1, N_LGN, "r", "Formula 1", std_plot=plot_std)
